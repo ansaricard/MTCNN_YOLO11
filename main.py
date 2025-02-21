@@ -111,36 +111,7 @@ def mtcnn_step3(img_boxes, bounding_box, model, threshold=0.8):
 
     return bounding_boxes, landmarks
 
-def mtcnn_step3_onnx(img_boxes, bounding_box, model, threshold=0.8):
-    bounding_boxes = np.array([bounding_box])
-    # bounding_boxes = ndarray.shape= (1,4or5)
-    import onnxruntime
-    onnxruntime_input = {"input":img_boxes}
-    output = model(img_boxes)
-    landmarks = output[0].cpu().data.numpy()  # shape [n_boxes, 10]
-    offsets = output[1].cpu().data.numpy()  # shape [n_boxes, 4]
-    probs = output[2].cpu().data.numpy()  # shape [n_boxes, 2]
-    if probs[:, 1] < threshold:
-        print("fail to landmark")
-        return None
-    keep = np.where(probs[:, 1] > threshold)[0]
-    bounding_boxes = bounding_boxes[keep]
-    offsets = offsets[keep]
-    landmarks = landmarks[keep]
-    bounding_boxes[:, 4] = probs[keep, 1].reshape((-1,))
-    # compute landmark points
-    width = bounding_boxes[:, 2] - bounding_boxes[:, 0] + 1.0 # x2 -x1
-    height = bounding_boxes[:, 3] - bounding_boxes[:, 1] + 1.0 # y2- y1
-    xmin, ymin = bounding_boxes[:, 0], bounding_boxes[:, 1]
-    landmarks[:, 0:5] = np.expand_dims(xmin, 1) + np.expand_dims(width, 1)*landmarks[:, 0:5]
-    landmarks[:, 5:10] = np.expand_dims(ymin, 1) + np.expand_dims(height, 1)*landmarks[:, 5:10]
 
-    bounding_boxes = calibrate_box(bounding_boxes, offsets)
-    # keep = nms(bounding_boxes, nms_threshold, mode='min')
-    # bounding_boxes = bounding_boxes[keep]
-    # landmarks = landmarks[keep]
-
-    return bounding_boxes, landmarks
 
 
 def squre_bounding_box(x1, y1, x2, y2, original_shape):
