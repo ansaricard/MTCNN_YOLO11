@@ -5,7 +5,7 @@ import onnxruntime
 import numpy as np
 from aling_transform import warp_and_crop_face, calibrate_box, get_reference_facial_points
 
-ort_session = onnxruntime.InferenceSession(r"D:\BagherAl\projects\MAF_ALIGNMENT\landmark_onet.onnx", 
+ort_session = onnxruntime.InferenceSession("landmark_onet.onnx", 
                                            providers=['CPUExecutionProvider'])
 
 def mtcnn_step3_onnx(image, bounding_box, threshold=0.8):
