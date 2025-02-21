@@ -64,7 +64,7 @@ def preprocess(img, size=(48, 48)):
     return img
 
 
-image_path = r"need_alignment.jpg"
+image_path = "need_alignment.jpg"
 img=cv2.imread(image_path)
 model = YOLO("face_detection_yolov11m_widerface.pt")  # pretrained YOLO11n model
 # Run batched inference on a list of images
